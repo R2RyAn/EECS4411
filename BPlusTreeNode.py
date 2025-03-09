@@ -1,5 +1,6 @@
 import math
 class BPlusTreeNode:
+    # Constructor, order is 4 by default, and is_leaf is False by default
     def __init__(self, order = 4, is_leaf=False):
         self.order = order
         self.is_leaf = is_leaf
@@ -9,10 +10,11 @@ class BPlusTreeNode:
         self.next_leaf = None  # Only leaf nodes have next_leaf for range queries
         self.parent = None
 
+    # Function to check if the node is full
     def is_full(self):
         return len(self.keys) >= self.order
 
-
+    # Function to split the node
     def split(self):
         mid = math.floor(len(self.keys) / 2)
         promoted = self.keys[mid]

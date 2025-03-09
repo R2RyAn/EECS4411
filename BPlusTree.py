@@ -82,3 +82,16 @@ class BPlusTree:
         for i, level in enumerate(levels):
             print(f"Level {i}: {level}")
 
+    def insert_from_file(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    if line.isdigit():  # Ensure it's a valid number
+                        key = int(line)
+                        self.insert(key, f"Value-{key}")  # You can modify the value format if needed
+            print(f"Inserted values from {filename} into the B+ Tree.")
+        except FileNotFoundError:
+            print(f"Error: File {filename} not found.")
+        except Exception as e:
+            print(f"Error reading file: {e}")

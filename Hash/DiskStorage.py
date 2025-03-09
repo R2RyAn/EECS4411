@@ -1,6 +1,6 @@
+from Bucket import Bucket
 import os
 import pickle
-from Bucket import Bucket
 
 class DiskStorage:
     """Manages bucket storage on disk using pickle."""

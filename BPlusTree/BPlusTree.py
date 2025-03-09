@@ -82,7 +82,7 @@ class BPlusTree:
 
     # Display the tree in the command line
     def display_tree(self):
-
+        count = 0
         levels = []
         queue = [(self.root, 0)]
         while queue:
@@ -90,12 +90,14 @@ class BPlusTree:
             if level >= len(levels):
                 levels.append([])
             levels[level].append(node.keys)
+            count += 1
             if not node.is_leaf:
                 for child in node.children:
                     queue.append((child, level + 1))
 
         for i, level in enumerate(levels):
             print(f"Level {i}: {level}")
+        print(f"Number of nodes: {count}")
 
     # Function to insert values from a file
     def insert_from_file(self, filename):

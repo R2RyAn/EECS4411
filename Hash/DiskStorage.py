@@ -3,11 +3,12 @@ import os
 import pickle
 
 class DiskStorage:
-    """Manages bucket storage on disk using pickle."""
+
 
     def __init__(self, directory="hash_buckets"):
+        # Manage the bucket storage on disk using Pickle
         self.directory = directory
-        os.makedirs(directory, exist_ok=True)  # Ensure storage folder exists
+        os.makedirs(directory, exist_ok=True)  # If it already exist dont create it
 
     def _get_filename(self, bucket_id):
         """Generates a file path for a given bucket."""

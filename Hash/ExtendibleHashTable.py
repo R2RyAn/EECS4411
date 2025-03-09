@@ -3,22 +3,22 @@ from Bucket import Bucket
 import pickle
 
 class ExtendibleHashTable:
-    """Implements an extendible hashing-based index with disk storage."""
 
     def __init__(self, bucket_size=2):
+        # Create the disk storage object to start storing buckets to disk
         self.storage = DiskStorage()  # Persistent storage for buckets
 
         try:
-            # Attempt to load previous metadata
-            with open("hash_metadata.pkl", "rb") as f:
-                metadata = pickle.load(f)
+            # Try to load in the metadata to create buckets
+            with open("hash_metadata.pkl", "rb") as file:
+                metadata = pickle.load(file)
                 self.global_depth = metadata["global_depth"]
                 self.directory = metadata["directory"]
-                print("🔁 Previous hash table metadata loaded.")
+                print("Previous hash table metadata loaded.")
 
         except FileNotFoundError:
-            # No metadata found, start fresh
-            print("🆕 No previous data found. Initializing new hash table.")
+            # If we havent found metadata
+            print("No previous data found. Initializing new hash table.")
             self.global_depth = 1
             self.bucket_size = bucket_size
             self.directory = [0, 1]  # Initial directory entries (pointing to 2 buckets)
@@ -28,21 +28,22 @@ class ExtendibleHashTable:
                 bucket = Bucket(bucket_id, bucket_size, local_depth=1)
                 self.storage.save_bucket(bucket)
 
-        self.load_buckets()  # Ensure buckets are reloaded
+        self.load_buckets()
 
     def hash_function(self, key):
-        """Hash function using Python's built-in hash() with a 32-bit mask."""
+        # Hash function using Pythons built-in hash function.
         return abs(hash(key)) % (2 ** 32) % (2 ** self.global_depth)
 
     def search(self, key):
         """Searches for a key in the hash table."""
         index = self.hash_function(key)
+        # Bucket Id is what the hash function gives it
         bucket_id = self.directory[index]
         bucket = self.storage.load_bucket(bucket_id)
         return key in bucket.keys if bucket else None
 
     def insert(self, key):
-        """Inserts a key, handling bucket splits and directory growth."""
+        # Inserts a key while handling bucket splits and directory growth.
         index = self.hash_function(key)
         bucket_id = self.directory[index]
         bucket = self.storage.load_bucket(bucket_id)
@@ -59,7 +60,7 @@ class ExtendibleHashTable:
         return self.insert(key)  # Retry insertion after splitting
 
     def split_bucket(self, index):
-        """Splits a bucket and updates the directory."""
+        # Splits a bucket and updates the directory.
         bucket_id = self.directory[index]
         old_bucket = self.storage.load_bucket(bucket_id)
 
@@ -96,14 +97,14 @@ class ExtendibleHashTable:
         self.save_metadata()  # Ensure directory updates are saved
 
     def double_directory(self):
-        """Doubles the directory size when needed."""
+        # Doubles the directory size when needed.
         self.global_depth += 1
         new_directory = self.directory[:]
         self.directory.extend(new_directory)  # Duplicate entries
         self.save_metadata()  # Ensure directory updates are saved
 
     def display(self):
-        """Displays the directory and bucket contents."""
+        # Displays the directory and bucket contents.
         print(f"\nGlobal Depth: {self.global_depth}")
         seen_buckets = set()
         for i, bucket_id in enumerate(self.directory):
@@ -113,11 +114,11 @@ class ExtendibleHashTable:
                 print(f"Dir[{i:02b}] (Local Depth: {bucket.local_depth}): {bucket.keys}")
 
     def count_buckets(self):
-        """Returns the number of unique buckets in the hash table."""
+        # Returns the number of unique buckets in the hash table.
         return len(set(self.directory))  # Count unique bucket IDs
 
     def save_metadata(self):
-        """Stores metadata about the hash table, including the directory and global depth."""
+        # Stores metadata about the hash table.
         try:
             with open("hash_metadata.pkl", "wb") as f:
                 pickle.dump({
@@ -128,7 +129,7 @@ class ExtendibleHashTable:
             print(f"Failed to save metadata: {e}")
 
     def load_buckets(self):
-        """Loads saved buckets from disk and restores directory mapping."""
+        #Loads saved buckets from disk and restore buckets.
         try:
             # Load metadata first
             with open("hash_metadata.pkl", "rb") as f:
